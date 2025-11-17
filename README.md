@@ -18,7 +18,7 @@
 
 ## 🎮 Gameplay Preview
 
-[![Ver video](https://github.com/SantiagoTmg/Pixel-Vortex---Proyecto-Aplicaciones-Web/blob/main/assets/Pixel-Vortex-Gameplay.mp4)
+[![Ver video]](https://github.com/SantiagoTmg/Pixel-Vortex---Proyecto-Aplicaciones-Web/blob/main/assets/Pixel-Vortex-Gameplay.mp4)
 
 *Video de 90 segundos mostrando gameplay, combates contra jefes y sistema de power-ups*
 
