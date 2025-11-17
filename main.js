@@ -597,8 +597,8 @@ class Game {
     }
 
     trySpawnPowerUp(x, y) {
-        // Probabilidad de spawn (20% de chance)
-        const spawnChance = 0.2;
+        // Probabilidad de spawn (30% de chance)
+        const spawnChance = 0.3;
         
         if (Math.random() < spawnChance) {
             // Tipos de power-ups disponibles
@@ -674,7 +674,47 @@ class Game {
         }
     }
 
-    // NUEVO MÉTODO: Mostrar configuración
+    setupVolumeSliders() {
+        const musicSlider = document.getElementById('musicVolume');
+        const sfxSlider = document.getElementById('sfxVolume');
+        const musicValue = document.getElementById('musicVolumeValue');
+        const sfxValue = document.getElementById('sfxVolumeValue');
+
+        // Actualizar valores en tiempo real para música
+        if (musicSlider && musicValue) {
+            musicSlider.addEventListener('input', (e) => {
+                musicValue.textContent = e.target.value + '%';
+            });
+        }
+
+        // Actualizar valores en tiempo real para efectos
+        if (sfxSlider && sfxValue) {
+            sfxSlider.addEventListener('input', (e) => {
+                sfxValue.textContent = e.target.value + '%';
+            });
+        }
+    }
+
+    // Modifica loadSettingsToUI para que actualice los valores visuales:
+    loadSettingsToUI() {
+        const musicSlider = document.getElementById('musicVolume');
+        const sfxSlider = document.getElementById('sfxVolume');
+        const playerNameInput = document.getElementById('playerName');
+        const musicValue = document.getElementById('musicVolumeValue');
+        const sfxValue = document.getElementById('sfxVolumeValue');
+        
+        if (musicSlider) {
+            musicSlider.value = this.settings.musicVolume * 100;
+            if (musicValue) musicValue.textContent = Math.round(this.settings.musicVolume * 100) + '%';
+        }
+        if (sfxSlider) {
+            sfxSlider.value = this.settings.sfxVolume * 100;
+            if (sfxValue) sfxValue.textContent = Math.round(this.settings.sfxVolume * 100) + '%';
+        }
+        if (playerNameInput) playerNameInput.value = this.settings.playerName;
+    }
+
+    // Modifica showSettings para llamar a setupVolumeSliders:
     showSettings() {
         this.currentState = this.states.MENU;
         this.hideScreens();
@@ -682,6 +722,8 @@ class Game {
         
         // Cargar valores actuales
         this.loadSettingsToUI();
+        // Configurar sliders para actualización en tiempo real
+        this.setupVolumeSliders();
     }
 
     // NUEVO MÉTODO: Cargar configuración a la UI

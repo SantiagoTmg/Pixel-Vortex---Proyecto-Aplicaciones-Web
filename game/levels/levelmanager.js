@@ -113,7 +113,7 @@ export class LevelManager {
     }
 
     spawnPowerUp(x, y) {
-        const testPowerUpChance = 0.2; 
+        const testPowerUpChance = 0.3; 
         
         if (Math.random() > testPowerUpChance) return;
         

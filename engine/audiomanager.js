@@ -26,23 +26,6 @@ export class AudioManager {
         }
     }
 
-    // NUEVOS MÉTODOS PARA MÚSICA
-    playMusic(soundKey, loop = true, volume = 1.0) {
-        const sound = this.sounds[soundKey];
-        if (sound && !this.muted) {
-            // Detener música actual si hay alguna
-            if (this.currentMusic) {
-                this.currentMusic.pause();
-                this.currentMusic.currentTime = 0;
-            }
-            
-            this.currentMusic = sound.cloneNode();
-            this.currentMusic.loop = loop;
-            this.currentMusic.volume = volume * this.musicVolume;
-            this.currentMusic.play().catch(e => console.log("Music play failed:", e));
-        }
-    }
-
     pauseMusic() {
         if (this.currentMusic) {
             this.currentMusic.pause();
@@ -63,10 +46,28 @@ export class AudioManager {
         }
     }
 
+    // En audiomanager.js, corrige setMusicVolume:
     setMusicVolume(volume) {
         this.musicVolume = volume;
         if (this.currentMusic) {
-            this.currentMusic.volume = volume;
+            this.currentMusic.volume = volume; // ← Esto está bien
+        }
+    }
+
+    // Y en playMusic, asegúrate de aplicar el volumen:
+    playMusic(soundKey, loop = true, volume = 1.0) {
+        const sound = this.sounds[soundKey];
+        if (sound && !this.muted) {
+            // Detener música actual si hay alguna
+            if (this.currentMusic) {
+                this.currentMusic.pause();
+                this.currentMusic.currentTime = 0;
+            }
+            
+            this.currentMusic = sound.cloneNode();
+            this.currentMusic.loop = loop;
+            this.currentMusic.volume = volume * this.musicVolume; // ← Aplicar volumen
+            this.currentMusic.play().catch(e => console.log("Music play failed:", e));
         }
     }
 
