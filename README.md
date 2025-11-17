@@ -16,6 +16,12 @@
 * **Sistema de power-ups**: Salud, escudo, disparo rápido y bonus de puntuación
 * **Combates contra jefes**: Enemigos finales con múltiples fases y patrones de ataque
 
+## 🎮 Gameplay Preview
+
+https://github.com/SantiagoTmg/Pixel-Vortex---Proyecto-Aplicaciones-Web/blob/main/assets/Pixel-Vortex-Gameplay.mp4
+
+*Video de 90 segundos mostrando gameplay, combates contra jefes y sistema de power-ups*
+
 ### 🛠️ Tecnología
 
 * **Motor de juego completo**: Desarrollado 100% en JavaScript vanilla
