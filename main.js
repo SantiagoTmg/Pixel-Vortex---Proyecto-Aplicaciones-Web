@@ -497,29 +497,20 @@ class Game {
         if (collision.enemyDestroyed) {
             this.ui.addScore(collision.scoreValue);
             
-            // VERIFICAR SI ES EL BOSS PRIMERO
-            if (collision.isBoss) {
-                // Manejar destrucción del boss
-                const boss = this.levelManager.getBoss();
-                if (boss && boss.isActive && boss.isActive()) {
-                    const x = boss.x || collision.x || 0;
-                    const y = boss.y || collision.y || 0;
-                    this.levelManager.onEnemyDestroyed(boss, x, y);
-                }
-            } 
-            // MANEJAR ENEMIGOS NORMALES
-            else if (collision.enemyIndex >= 0 && collision.enemyIndex < enemies.length) {
-                const enemy = enemies[collision.enemyIndex];
-                if (enemy && enemy.isActive && enemy.isActive()) {
-                    const x = enemy.x || collision.x || 0;
-                    const y = enemy.y || collision.y || 0;
-                    this.levelManager.onEnemyDestroyed(enemy, x, y);
-                    
-                    // Marcar el enemigo como inactivo
+            const enemy = enemies[collision.enemyIndex];
+            if (enemy) {
+                // LLAMAR SIEMPRE a onEnemyDestroyed
+                const x = enemy.x || collision.x || 0;
+                const y = enemy.y || collision.y || 0;
+                
+                this.levelManager.onEnemyDestroyed(enemy, x, y);
+                
+                // Marcar el enemigo como inactivo
+                if (enemy.isActive && typeof enemy.isActive === 'function') {
                     enemy.active = false;
                 }
             } else {
-                console.warn("Invalid enemy index:", collision.enemyIndex, "Enemies count:", enemies.length);
+                console.warn("Enemy not found at index:", collision.enemyIndex);
             }
         }
     }
@@ -598,7 +589,7 @@ class Game {
 
     trySpawnPowerUp(x, y) {
         // Probabilidad de spawn (30% de chance)
-        const spawnChance = 0.3;
+        const spawnChance = 0.30;
         
         if (Math.random() < spawnChance) {
             // Tipos de power-ups disponibles

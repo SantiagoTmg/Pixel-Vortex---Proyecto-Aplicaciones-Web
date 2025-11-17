@@ -46,7 +46,6 @@ export class AudioManager {
         }
     }
 
-    // En audiomanager.js, corrige setMusicVolume:
     setMusicVolume(volume) {
         this.musicVolume = volume;
         if (this.currentMusic) {

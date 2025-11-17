@@ -137,8 +137,19 @@ export class LevelManager {
     }
 
     onEnemyDestroyed(enemy, x, y) {
-        this.spawnPowerUp(x, y);
+        // Verificar si es un boss
+        if (enemy.isBoss || enemy === this.boss) {
+            // Manejar destrucción del boss
+            this.boss = null;
+            if (typeof this.onLevelComplete === 'function') {
+                this.onLevelComplete(this.currentLevel);
+            }
+        } else {
+            // Manejar destrucción de enemigos normales - GENERAR POWER-UP
+            this.spawnPowerUp(x, y);
+        }
         
+        // Efectos de partículas para cualquier enemigo
         if (this.particleSystem) {
             this.particleSystem.createExplosion(x, y, '#FF6B6B', 15, 100, 1.0);
         }
@@ -168,17 +179,6 @@ export class LevelManager {
         
         if (typeof this.onLevelComplete === 'function') {
             this.onLevelComplete(this.currentLevel);
-        }
-    }
-
-    onEnemyDestroyed(enemy, x, y) {
-        if (enemy.isBoss) {  // O alguna forma de identificar que es un boss
-            // Manejar destrucción del boss
-            this.boss = null;
-            this.onLevelComplete(this.currentLevel);
-        } else {
-            // Manejar destrucción de enemigos normales
-            this.trySpawnPowerUp(x, y);
         }
     }
 
