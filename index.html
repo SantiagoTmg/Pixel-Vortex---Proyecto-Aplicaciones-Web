@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <link rel="icon" type="image/x-icon" href="assets/sprites/favicon.ico">
+    <title>Arcade Shooter - HTML5 Game</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background: #000;
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            color: white;
+        }
+        #gameContainer {
+            position: absolute;
+            margin: auto;
+            border: 4px solid #00ffff; /* azul neon */
+            box-shadow: 0 0 20px #00ffff;
+        }
+        #gameCanvas {
+            display: block;
+            margin: 10px auto;
+            border: 1px solid #4e4b67;
+        }
+        .game-layer {
+            position: top;
+            width: 100%;
+            height: 100%;
+            display: none;
+            background: rgba(0, 0, 0, 0.8);
+        }
+        #loadingScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        #mainMenu, #gameOverScreen, #levelCompleteScreen {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column-reverse;
+        }
+        .screen-content {
+            text-align: top;
+            background: rgba(0, 0, 50, 0.9);
+            padding: 40px;
+            border-radius: 15px;
+            border: 2px solid #00FFFF;
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+        }
+        .menu-title {
+            font-size: 3em;
+            color: #00FFFF;
+            text-shadow: 0 0 10px #00FFFF;
+            margin-bottom: 20px;
+        }
+        .menu-button {
+            background: linear-gradient(45deg, #0066FF, #00CCFF);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            margin: 10px;
+            border-radius: 25px;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+        .menu-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #00FFFF;
+        }
+        .score-display {
+            font-size: 1.0em;
+            margin: 15px 0;
+            color: #FFFF00;
+        }
+        .high-score {
+            font-size: 1.2em;
+            margin: 10px 0;
+            color: #00FF00;
+        }
+        #loadingProgress {
+            margin-top: 20px;
+            font-size: 1.2em;
+            color: #00FFFF;
+        }
+        .setting-item {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+        }
+
+        .setting-item label {
+            color: white;
+            margin-right: 10px;
+        }
+
+        .setting-item input[type="range"] {
+            width: 150px;
+        }
+
+        .setting-item input[type="text"] {
+            padding: 5px;
+            font-size: 16px;
+            width: 150px;
+        }
+
+        #highScoreNameInput {
+            margin: 10px 0;
+        }
+
+        #highScoreNameInput input {
+            padding: 5px;
+            margin: 0 10px;
+            font-size: 16px;
+        }
+
+        .high-scores-list {
+            width: 100%;
+            max-width: 400px;
+            margin: 20px 0;
+            color: white;
+        }
+
+        .high-score-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 5px;
+        }
+
+        .high-score-item .rank {
+            font-weight: bold;
+            color: #FFFF00;
+            width: 30px;
+        }
+
+        .high-score-item .name {
+            flex: 1;
+            text-align: left;
+            margin-left: 10px;
+        }
+
+        .high-score-item .score {
+            font-weight: bold;
+            color: #00FF00;
+            width: 80px;
+            text-align: right;
+        }
+
+        .high-score-item .level {
+            color: #CCCCCC;
+            width: 60px;
+            text-align: right;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="800" height="600">
+            Tu navegador no soporta HTML5 Canvas.
+        </canvas>
+        
+        <!-- Pantalla de carga -->
+        <div id="loadingScreen" class="game-layer">
+            <div class="screen-content">
+                <div class="menu-title">CARGANDO</div>
+                <div id="loadingMessage">Cargando Recursos...</div>
+                <div id="loadingProgress">0%</div>
+            </div>
+        </div>
+        
+        <!-- MENÚ PRINCIPAL -->
+        <div id="mainMenu" class="game-layer">
+            <div class="screen-content">
+                <div class="menu-title">PIXEL VORTEX</div>
+                <div class="high-score" id="mainMenuHighScore">Puntaje Alto: 0</div>
+                <button class="menu-button" id="startGameBtn">EMPEZAR</button>
+                <button class="menu-button" id="highScoresBtn">PUNTAJES ALTOS</button>
+                <button class="menu-button" id="settingsBtn">CONFIGURACION</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de PAUSA -->
+        <div id="pauseScreen" class="game-layer" style="display: none;">
+            <div class="menu-container">
+                <h2>JUEGO PAUSADO</h2>
+                <button id="resumeGameBtn">CONTINUAR JUEGO</button>
+                <button id="pauseToMenuBtn">MENU PRINCIPAL</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de CONFIGURACIÓN -->
+        <div id="settingsScreen" class="game-layer" style="display: none;">
+            <div class="menu-container">
+                <h2>CONFIGURACIONES</h2>
+                
+                <div class="setting-item">
+                    <label>Volumen de Musica:</label>
+                    <input type="range" id="musicVolume" min="0" max="100" value="50">
+                    <span id="musicVolumeValue">50%</span>
+                </div>
+                
+                <div class="setting-item">
+                    <label>SFX Volumen:</label>
+                    <input type="range" id="sfxVolume" min="0" max="100" value="70">
+                    <span id="sfxVolumeValue">70%</span>
+                </div>
+                
+                <div class="setting-item">
+                    <label>Nombre del Jugador:</label>
+                    <input type="text" id="playerName" maxlength="15" placeholder="Enter your name">
+                </div>
+                
+                <button id="saveSettingsBtn">GUARDAR</button>
+                <button id="backSettingsBtn">VOLVER</button>
+            </div>
+        </div>
+
+        <!-- Pantalla de HIGH SCORES -->
+        <div id="highScoresScreen" class="game-layer" style="display: none;">
+            <div class="menu-container">
+                <h2>PUNTAJES ALTOS</h2>
+                <div id="highScoresList" class="high-scores-list">
+                    <!-- Los scores se cargarán aquí dinámicamente -->
+                </div>
+                <button id="backFromScoresBtn">VOLVER</button>
+            </div>
+        </div>
+
+        <!-- GAME OVER -->
+        <div id="gameOverScreen" class="game-layer" style="display: none;">
+            <div class="menu-container">
+                <h2>FIN DEL JUEGO</h2>
+                <p id="finalScore">Score: 0</p>
+                <div id="newHighScore" style="display: none;">
+                    <p> ¡NUEVO PUNTAJE ALTO! </p>
+                    <div id="highScoreNameInput" style="display: none;">
+                        <label>Ingresa tu nombre:</label>
+                        <input type="text" id="highScoreName" maxlength="15">
+                        <button onclick="window.game.saveHighScoreName()">GUARDAR NOMBRE</button>
+                    </div>
+                </div>
+                <button id="playAgainBtn">JUGAR OTRA VEZ</button>
+                <button id="mainMenuBtn2">MENU PRINCIPAL</button>
+            </div>
+        </div>
+
+        <!-- LEVEL COMPLETE -->
+        <div id="levelCompleteScreen" class="game-layer">
+            <div class="screen-content">
+                <div class="menu-title">¡NIVEL COMPLETADO!</div>
+                <div class="score-display" id="levelScore">Puntaje: 0</div>
+                <button class="menu-button" id="nextLevelBtn">SGUIENTE NIVEL</button>
+            </div>
+        </div>
+
+    <script type="module" src="main.js"></script>
+</body>
+</html>
